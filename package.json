@@ -1,15 +1,9 @@
 {
   "name": "hubot-bw",
-  "version": "0.4.3",
-  "author": {
-    "name": "Thomas Howe",
-    "url": "github.com/howethomas"
-  },
+  "version": "0.0.1",
+  "author": "Thomas Howe (github.com/howethomas)",
   "contributors": [
-    {
-      "name": "Thomas Howe",
-      "email": "ghostofbasho@gmail.com"
-    }
+    "Thomas Howe <ghostofbasho@gmail.com>"
   ],
   "keywords": [
     "hubot",
@@ -42,12 +36,9 @@
   "engines": {
     "node": ">=0.4.7"
   },
-  "readmeFilename": "README.md",
   "homepage": "https://github.com/howethomas/hubot-bw",
-  "_id": "hubot-bw@0.0.1",
   "scripts": {},
   "_shasum": "2ed0371096560391dd890dba1cd34aeac1ab9a86",
   "_from": "hubot-bw@0.0.1",
-  "readme": "# A [Hubot](https://github.com/github/hubot) adapter for [bw](https://www.bandwidth.com)\n\n## Configuring the Adapter\n\nThe Nexmo adapter requires the user's personal api key and secret as environment variables:\n    NEXMO_KEY\n    NEXMO_SECRET\n\nand a routable IP address to receive inbound messages as environment variable:\n    CALLBACK_URL\n\n## License\n\nMIT\n",
-  "gitHead": "0b200b59b6ca46b1f7f80129bc7d4dc5d65c0d1d"
+  "license": "ISC"
 }
