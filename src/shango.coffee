@@ -14,28 +14,28 @@ Morgan = require('morgan')
 BodyParser = require('body-parser');
 
 
-class Bw extends Adapter
+class Shango extends Adapter
 
   constructor: (robot) ->
     super(robot)
     @active_numbers = []
-    @pending_bw_requests = []
+    @pending_shango_requests = []
 
     @ee= new Emitter
     @robot = robot
     @THROTTLE_RATE_MS = 1000
-    @BW_SEND_MSG_URL = process.env.BW_SEND_MSG_URL
+    @SHANGO_SEND_MSG_URL = process.env.SHANGO_SEND_MSG_URL
     # Run a one second loop that checks to see if there are messages to be sent
-    # to bw. Wait one second after the request is made to avoid
+    # to SHANGO. Wait one second after the request is made to avoid
     # rate throttling issues.
-    setInterval(@drain_bw, @THROTTLE_RATE_MS)
+    setInterval(@drain_shango, @THROTTLE_RATE_MS)
 
 
   report: (log_string) ->
     @robot.emit("log", log_string)
 
-  drain_bw: () =>
-    request = @pending_bw_requests.shift()
+  drain_shango: () =>
+    request = @pending_shango_requests.shift()
     if request?
       @report "Making request to #{request.url}"
       Request.post(
@@ -49,30 +49,33 @@ class Bw extends Adapter
             @report  status_message + " failed with #{response.statusCode}:#{response.statusMessage}"
       )
 
-  post_to_bw: (url, options) =>
+  post_to_shango: (url, options) =>
     request =
       url: url
       options: options
-    @pending_bw_requests.push request
+    @pending_shango_requests.push request
 
-  send_bw_message: (to, from, text) ->
+  send_shango_message: (to, from, text) ->
     console.log "Sending #{text} to #{to} from #{from}"
     options =
-      form:
-        To: to
-        From: from
-        Body: text
-      auth:
-        user: process.env.BW_ACCOUNT_SID
-        pass: process.env.BW_AUTH_TOKEN
-    @post_to_bw(@BW_SEND_MSG_URL, options)
+      json: true
+      body:
+        to: to
+        toName: to
+        from: from
+        fromName: from
+        activationType: "SEND_TXT"
+        data: text
+        timestamp: ""
+        attachment: null
+    @post_to_shango(@SHANGO_SEND_MSG_URL, options)
 
   send: (envelope, strings...) ->
     {user, room} = envelope
     user = envelope if not user # pre-2.4.2 style
     from = user.room
     to = user.name
-    @send_bw_message(to, from, string) for string in strings
+    @send_shango_message(to, from, string) for string in strings
 
   emote: (envelope, strings...) ->
     @send envelope, "* #{str}" for str in strings
@@ -83,9 +86,9 @@ class Bw extends Adapter
 
   run: ->
     self = @
-    callback_path = process.env.BW_CALLBACK_PATH or "/bw_callback"
-    listen_port = process.env.BW_LISTEN_PORT
-    routable_address = process.env.BW_CALLBACK_URL
+    callback_path = process.env.SHANGO_CALLBACK_PATH or "/shango_callback"
+    listen_port = process.env.SHANGO_LISTEN_PORT
+    routable_address = process.env.SHANGO_CALLBACK_URL
 
     callback_url = "#{routable_address}#{callback_path}"
     app = express()
@@ -102,11 +105,11 @@ class Bw extends Adapter
       res.end()
 
       if req.body?
-        user_name = user_id = req.body.From
-        message_id = req.body.SmsSid
-        room_name = req.body.To
+        user_name = user_id = req.body.remoteNumber
+        message_id = req.body.subId
+        room_name = req.body.subNumber.replace(/\+/g, '')
         user = @robot.brain.userForId user_name, name: user_name, room: room_name
-        inbound_message = new TextMessage user, req.body.Body, message_id
+        inbound_message = new TextMessage user, req.body.info.message, message_id
         @robot.receive inbound_message
         @report "Received #{inbound_message} from #{user_name} bound for #{room_name}"
         return
@@ -115,7 +118,7 @@ class Bw extends Adapter
     server = app.listen(listen_port, "0.0.0.0", ->
       host = server.address().address
       port = server.address().port
-      console.log "bw listening locally at http://%s:%s", host, port
+      console.log "SHANGO listening locally at http://%s:%s", host, port
       console.log "External URL is #{callback_url}"
       return
     )
@@ -123,4 +126,4 @@ class Bw extends Adapter
     @emit "connected"
 
 exports.use = (robot) ->
-  new Bw robot
+  new Shango robot

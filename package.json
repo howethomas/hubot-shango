@@ -1,5 +1,5 @@
 {
-  "name": "hubot-bw",
+  "name": "hubot-shango",
   "version": "0.1.0",
   "author": "Thomas Howe (github.com/howethomas)",
   "contributors": [
@@ -7,10 +7,10 @@
   ],
   "keywords": [
     "hubot",
-    "bandwidth.com",
+    "Shango.com",
     "adapter"
   ],
-  "description": "A Bandwidth.com adapter for hubot",
+  "description": "A Shango.com adapter for hubot",
   "licenses": [
     {
       "type": "MIT",
@@ -32,13 +32,13 @@
   "devDependencies": {
     "coffee-script": ">=1.2.0"
   },
-  "main": "./src/bw",
+  "main": "./src/shango",
   "engines": {
     "node": ">=0.4.7"
   },
-  "homepage": "https://github.com/howethomas/hubot-bw",
+  "homepage": "https://github.com/howethomas/hubot-shango",
   "scripts": {},
   "_shasum": "2ed0371096560391dd890dba1cd34aeac1ab9a86",
-  "_from": "hubot-bw@0.0.1",
+  "_from": "hubot-shango@0.0.0",
   "license": "ISC"
 }
